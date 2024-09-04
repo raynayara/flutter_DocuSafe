@@ -1,4 +1,6 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_docusafe/firebase_options.dart';
 import 'package:flutter_docusafe/pages/home_page.dart';
 
 void main() async{
