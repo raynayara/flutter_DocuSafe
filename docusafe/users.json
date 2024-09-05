@@ -3,7 +3,7 @@
         {
             "user": "Ali",
             "password": "12",
-            "permiss": "adm"
+            "permissao": "adm"
         },
         {
             "user": "ray",
@@ -16,6 +16,7 @@
         {
             "user": "arine",
             "password": "acbf39a150e9e25ccf5cfcb647d4188cbf69c7a9af3e88995cdcee3e49a46fd2"
+
         },
         {
             "user": "123",
