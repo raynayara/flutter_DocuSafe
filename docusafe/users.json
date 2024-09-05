@@ -6,6 +6,11 @@
             "permissao": "adm"
         },
         {
+            "user": "admin1",
+            "password": "9a83c6cb1126d93de4a30715b28f1f4b26b983c57fb39e6d826d7e893ae4ee74",
+            "permissao": "adm"
+        },
+        {
             "user": "ray",
             "password": "123"
         },
@@ -16,7 +21,6 @@
         {
             "user": "arine",
             "password": "acbf39a150e9e25ccf5cfcb647d4188cbf69c7a9af3e88995cdcee3e49a46fd2"
-
         },
         {
             "user": "123",
@@ -25,6 +29,16 @@
         {
             "user": "321",
             "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+        },
+        {
+            "user": "Dja",
+            "password": "c5449bf4fcdb74ab4119378fd792638e311ecab0a85cf61e6f296ae3fabee32e",
+            "permissao": "aluno"
+        },
+        {
+            "user": "Cheira",
+            "password": "84aecd5cd470a519f356ff3a7f20541547d2c52372e39d4053a339c30f65cb31",
+            "permissao": "aluno"
         }
     ]
 }

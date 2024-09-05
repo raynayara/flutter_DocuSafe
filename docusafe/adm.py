@@ -1,62 +1,74 @@
 import json
 import os
+import hashlib
 
-# Nome do arquivo JSON para armazenar administradores
-nome_arquivo_adms = 'admins.json'
-
-# Listas globais para armazenar alunos, professores e disciplinas
-alunos = []
-professores = []
-disciplinas = []
+# Caminho dos arquivos JSON
+nome_arquivo_users = 'docusafe/users.json'
 
 # Função para coletar dados de login e senha
 def coleta_dados():
     user = input('Digite o usuário: ')
     password = input('Digite a senha: ')
-    return user, password
+    password_hash = hashlib.sha256(password.encode()).hexdigest()  # Hash da senha
+    return user, password_hash
+
+# Função para salvar dados no arquivo JSON
+def salvar_dados(nome_arquivo, dados):
+    with open(nome_arquivo, 'w') as arquivo:
+        json.dump(dados, arquivo, indent=4)
+
+# Função para carregar dados do arquivo JSON
+def carregar_dados(nome_arquivo):
+    if os.path.exists(nome_arquivo) and os.path.getsize(nome_arquivo) > 0:
+        with open(nome_arquivo, 'r') as arquivo:
+            try:
+                return json.load(arquivo)
+            except json.JSONDecodeError:
+                print("Erro ao ler o arquivo JSON.")
+                return {"users": []}
+    return {"users": []}
 
 # Função para login do administrador
 def entrar_como_adm():
-    user, password = coleta_dados()
-    
-    if os.path.exists(nome_arquivo_adms) and os.path.getsize(nome_arquivo_adms) > 0:
-        with open(nome_arquivo_adms, 'r') as arquivo:
-            try:
-                dado_json = json.load(arquivo)
-            except json.JSONDecodeError:
-                print("Erro ao ler o arquivo JSON. Verifique se está formatado corretamente.")
+    user, password_hash = coleta_dados()
+
+    # Verifica no arquivo users.json
+    users = carregar_dados(nome_arquivo_users)
+    for admin in users.get('users', []):
+        if admin['user'] == user and admin['password'] == password_hash:
+            if admin.get('permissao') == 'adm':
+                print(f'{admin["user"]} logado como administrador com sucesso')
+                return True
+            else:
+                print('Permissão negada. Apenas administradores podem acessar.')
                 return False
+    print('Usuário ou senha incorretos.')
+    return False
 
-        # Verifica se a chave 'admins' está presente no JSON
-        if 'admins' not in dado_json:
-            print("'admins' não encontrado no arquivo JSON.")
-            return False
+# Função para salvar no arquivo 'users' com permissões
+def salvar_no_users(user, password_hash, permissao):
+    users = carregar_dados(nome_arquivo_users)
 
-        # Verifica o login e permissões do administrador
-        for admin in dado_json['admins']:
-            if admin['user'] == user and admin['password'] == password:
-                if admin.get('permissao') == 'adm':
-                    print(f'{admin["user"]} logado como administrador com sucesso')
-                    return True
-                else:
-                    print('Permissão negada. Apenas administradores podem acessar.')
-                    return False
-        print('Usuário ou senha incorretos.')
-    else:
-        print(f'O arquivo {nome_arquivo_adms} não foi encontrado ou está vazio.')
-        return False
+    if 'users' not in users:
+        users['users'] = []
+    
+    novo_usuario = {"user": user, "password": password_hash, "permissao": permissao}
+    
+    users['users'].append(novo_usuario)
+    salvar_dados(nome_arquivo_users, users)
+    print(f'{permissao.capitalize()} {user} salvo no arquivo users com sucesso.')
 
 # Função para cadastrar aluno
 def cadastrar_aluno():
     nome_aluno = input("Digite o nome do aluno: ")
-    alunos.append(nome_aluno)
-    print(f'Aluno {nome_aluno} cadastrado com sucesso.')
+    user, password_hash = coleta_dados()  # Coleta login e senha
+    salvar_no_users(user, password_hash, 'aluno')  # Salva no arquivo users com permissão de aluno
 
 # Função para cadastrar professor
 def cadastrar_professor():
     nome_professor = input("Digite o nome do professor: ")
-    professores.append(nome_professor)
-    print(f'Professor {nome_professor} cadastrado com sucesso.')
+    user, password_hash = coleta_dados()  # Coleta login e senha
+    salvar_no_users(user, password_hash, 'professor')  # Salva no arquivo users com permissão de professor
 
 # Função para cadastrar disciplina
 def cadastrar_disciplina():
@@ -66,22 +78,32 @@ def cadastrar_disciplina():
 
 # Função para criar turma
 def criar_turma():
+    users = carregar_dados(nome_arquivo_users)['users']
+
+    alunos = [user for user in users if user.get('permissao') == 'aluno']
+    professores = [user for user in users if user.get('permissao') == 'professor']
+
     if not alunos or not professores or not disciplinas:
         print("É necessário cadastrar alunos, professores e disciplinas antes de criar uma turma.")
         return
-    
+
+    aluno = alunos[0]['user']
+    professor = professores[0]['user']
+    disciplina = disciplinas[0]
+
     turma = {
-        'alunos': alunos.copy(),  # Copiando a lista para a turma
-        'professor': professores[0],  # Atribui o primeiro professor cadastrado
-        'disciplina': disciplinas[0]  # Atribui a primeira disciplina cadastrada
+        'aluno': aluno,
+        'professor': professor,
+        'disciplina': disciplina
     }
+    turmas.append(turma)
     print(f'Turma criada com sucesso: {turma}')
-    return turma
 
 # Função para visualizar turmas
-def visualizar_turmas(turma):
-    if turma:
-        print(f'Turma criada: {turma}')
+def visualizar_turmas():
+    if turmas:
+        for turma in turmas:
+            print(f'Turma criada: {turma}')
     else:
         print('Nenhuma turma criada ainda.')
 
@@ -89,7 +111,6 @@ def visualizar_turmas(turma):
 def sistema_adm():
     if entrar_como_adm():
         print("Bem-vindo, administrador!")
-        turma = None  # Variável para armazenar a turma criada
         
         while True:
             print("\nOpções: ")
@@ -97,7 +118,7 @@ def sistema_adm():
             print("2 - Cadastrar professor")
             print("3 - Cadastrar disciplina")
             print("4 - Criar turma")
-            print("5 - Visualizar turma")
+            print("5 - Visualizar turmas")
             print("0 - Sair")
             
             opcao = input("Escolha uma opção: ")
@@ -109,9 +130,9 @@ def sistema_adm():
             elif opcao == '3':
                 cadastrar_disciplina()
             elif opcao == '4':
-                turma = criar_turma()
+                criar_turma()
             elif opcao == '5':
-                visualizar_turmas(turma)
+                visualizar_turmas()
             elif opcao == '0':
                 print("Encerrando o sistema.")
                 break
@@ -120,4 +141,6 @@ def sistema_adm():
 
 # Exemplo de execução do sistema
 if __name__ == "__main__":
+    disciplinas = []  # Inicializa lista de disciplinas
+    turmas = []  # Inicializa lista de turmas
     sistema_adm()
