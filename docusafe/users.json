@@ -39,6 +39,21 @@
             "user": "Cheira",
             "password": "84aecd5cd470a519f356ff3a7f20541547d2c52372e39d4053a339c30f65cb31",
             "permissao": "aluno"
+        },
+        {
+            "user": "roy@gmail.com",
+            "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+            "permissao": "professor"
+        },
+        {
+            "user": "nay@gmail.com",
+            "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+            "permissao": "aluno"
+        },
+        {
+            "user": "eber",
+            "password": "5c828a4a7406453439ca8f567bc4871fc90261ae3cb2b6203de8b071936f9c7b",
+            "permissao": "professor"
         }
     ]
 }

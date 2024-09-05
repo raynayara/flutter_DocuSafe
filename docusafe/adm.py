@@ -4,6 +4,11 @@ import hashlib
 
 # Caminho dos arquivos JSON
 nome_arquivo_users = 'docusafe/users.json'
+nome_arquivo_notas = 'docusafe/notas.json'
+
+# Inicializa lista de disciplinas e turmas
+disciplinas = []
+turmas = []
 
 # Função para coletar dados de login e senha
 def coleta_dados():
@@ -141,6 +146,4 @@ def sistema_adm():
 
 # Exemplo de execução do sistema
 if __name__ == "__main__":
-    disciplinas = []  # Inicializa lista de disciplinas
-    turmas = []  # Inicializa lista de turmas
     sistema_adm()
