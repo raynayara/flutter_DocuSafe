@@ -4,6 +4,11 @@ import hashlib
 from adm import carregar_dados, salvar_dados
 from adm import coleta_dados
 
+
+# Função para limpar a tela
+def limpar_tela():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 # Caminho do arquivo JSON
 nome_arquivo_users = 'docusafe/users.json'
 nome_arquivo_notas = 'docusafe/notas.json'
@@ -17,6 +22,7 @@ def entrar_como_professor():
     for prof in users.get('users', []):
         if prof['user'] == user and prof['password'] == password_hash:
             if prof.get('permissao') == 'professor':
+                limpar_tela()
                 print(f'{prof["user"]} logado como professor com sucesso')
                 return True, user
             else:
@@ -35,9 +41,11 @@ def cadastrar_notas_professor():
         print("Nenhum aluno cadastrado. O administrador deve cadastrar alunos.")
         return
 
-    print("\nAlunos cadastrados:")
+    print("\nAlunos cadastrados")
+    print("-~-"*20)
     for i, aluno in enumerate(alunos, start=1):
         print(f"{i}. {aluno['user']}")
+    print("-~-"*20)
     
     boletim = {}
     for aluno in alunos:
@@ -46,8 +54,11 @@ def cadastrar_notas_professor():
 
     # Salvar notas no arquivo JSON
     salvar_dados(nome_arquivo_notas, boletim)
+    limpar_tela()
+    
     print("Notas cadastradas com sucesso.")
-
+    print("-~-"*20)
+    
 # Função para visualizar as turmas em que o professor leciona
 def visualizar_turmas_professor(professor):
     turmas = carregar_dados('docusafe/turmas.json').get('turmas', [])
@@ -66,19 +77,23 @@ def sistema_professor():
     sucesso, professor = entrar_como_professor()
     
     if sucesso:
+        print('\n\n')
         print(f"Bem-vindo, professor {professor}!")
-        
+        print('-~-'*20)
         while True:
             print("\nOpções: ")
             print("1 - Cadastrar notas")
             print("2 - Visualizar turmas")
-            print("0 - Sair")
+            print("0 - Sair\n")
+            print('-~-'*20)
             
             opcao = input("Escolha uma opção: ")
             
             if opcao == '1':
+                limpar_tela()
                 cadastrar_notas_professor()
             elif opcao == '2':
+                limpar_tela()
                 visualizar_turmas_professor(professor)
             elif opcao == '0':
                 print("Encerrando o sistema.")

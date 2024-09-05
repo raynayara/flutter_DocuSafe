@@ -54,6 +54,21 @@
             "user": "eber",
             "password": "5c828a4a7406453439ca8f567bc4871fc90261ae3cb2b6203de8b071936f9c7b",
             "permissao": "professor"
+        },
+        {
+            "user": "ray@teste1",
+            "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+            "permissao": "aluno"
+        },
+        {
+            "user": "R@TESTE",
+            "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+            "permissao": "aluno"
+        },
+        {
+            "user": "roy@",
+            "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+            "permissao": "professor"
         }
     ]
 }

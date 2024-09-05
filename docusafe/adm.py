@@ -10,12 +10,18 @@ nome_arquivo_notas = 'docusafe/notas.json'
 disciplinas = []
 turmas = []
 
+def limpar_tela():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+
 # Função para coletar dados de login e senha
 def coleta_dados():
+    
     user = input('Digite o usuário: ')
     password = input('Digite a senha: ')
     password_hash = hashlib.sha256(password.encode()).hexdigest()  # Hash da senha
     return user, password_hash
+    
 
 # Função para salvar dados no arquivo JSON
 def salvar_dados(nome_arquivo, dados):
@@ -42,8 +48,12 @@ def entrar_como_adm():
     for admin in users.get('users', []):
         if admin['user'] == user and admin['password'] == password_hash:
             if admin.get('permissao') == 'adm':
+                limpar_tela()
                 print(f'{admin["user"]} logado como administrador com sucesso')
+                print("-~-"*20)
+                
                 return True
+            
             else:
                 print('Permissão negada. Apenas administradores podem acessar.')
                 return False
@@ -61,7 +71,8 @@ def salvar_no_users(user, password_hash, permissao):
     
     users['users'].append(novo_usuario)
     salvar_dados(nome_arquivo_users, users)
-    print(f'{permissao.capitalize()} {user} salvo no arquivo users com sucesso.')
+    limpar_tela()
+    print(f'{permissao.capitalize()} {user} cadastrado com sucesso.')
 
 # Função para cadastrar aluno
 def cadastrar_aluno():
@@ -79,6 +90,7 @@ def cadastrar_professor():
 def cadastrar_disciplina():
     nome_disciplina = input("Digite o nome da disciplina: ")
     disciplinas.append(nome_disciplina)
+    limpar_tela()
     print(f'Disciplina {nome_disciplina} cadastrada com sucesso.')
 
 # Função para criar turma
@@ -119,24 +131,31 @@ def sistema_adm():
         
         while True:
             print("\nOpções: ")
+            print("-~-"*20)
             print("1 - Cadastrar aluno")
             print("2 - Cadastrar professor")
             print("3 - Cadastrar disciplina")
             print("4 - Criar turma")
             print("5 - Visualizar turmas")
             print("0 - Sair")
+            print("-~-"*20)
             
-            opcao = input("Escolha uma opção: ")
+            opcao = input("Escolha uma opção: \n")
             
             if opcao == '1':
+                limpar_tela()
                 cadastrar_aluno()
             elif opcao == '2':
+                limpar_tela()
                 cadastrar_professor()
             elif opcao == '3':
+                limpar_tela()
                 cadastrar_disciplina()
             elif opcao == '4':
+                limpar_tela()
                 criar_turma()
             elif opcao == '5':
+                limpar_tela()
                 visualizar_turmas()
             elif opcao == '0':
                 print("Encerrando o sistema.")
