@@ -2,10 +2,14 @@ import json
 import os
 import hashlib
 from adm import carregar_dados, coleta_dados
+import base64
+import criptografia
+file_path = 'C:/Ronald/Faculdade/Seguranca/flutter_DocuSafe/docusafe/keys.json'
+rsa_manager = criptografia.RSAKey(file_path)
 
 # Caminho dos arquivos JSON
-nome_arquivo_users = 'docusafe/users.json'
-nome_arquivo_notas = 'docusafe/notas.json'
+nome_arquivo_users = 'users.json'
+nome_arquivo_notas = 'notas.json'
 
 # Função para limpar a tela
 def limpar_tela():
@@ -18,14 +22,16 @@ def entrar_como_aluno():
     # Verifica no arquivo users.json
     users = carregar_dados(nome_arquivo_users)
     for aluno in users.get('users', []):
-        if aluno['user'] == user and aluno['password'] == password_hash:
-            if aluno.get('permissao') == 'aluno':
-                limpar_tela()
-                print(f'{aluno["user"]} logado como aluno com sucesso\n\n')
-                return True, user
-            else:
-                print('Permissão negada. Apenas alunos podem acessar.')
-                return False, None
+        password_decrypted = rsa_manager.decifrar(base64.b64decode(aluno['password']))
+        if aluno['user'] == user:
+            if password_decrypted == password_hash:
+                if aluno.get('permissao') == 'aluno':
+                    limpar_tela()
+                    print(f'{aluno["user"]} logado como aluno com sucesso\n\n')
+                    return True, user
+                else:
+                    print('Permissão negada. Apenas alunos podem acessar.')
+                    return False, None
     print('Usuário ou senha incorretos.')
     return False, None
 

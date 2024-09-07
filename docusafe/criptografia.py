@@ -80,10 +80,10 @@ class RSAKey:
 
 if __name__ == "__main__":
     # Caminho do arquivo JSON onde as chaves serão armazenadas
-    file_path = 'D:\\projetos\\flutter_DocuSafe\\docusafe\\keys.json'
+    file_path = 'C:/Ronald/Faculdade/Seguranca/flutter_DocuSafe/docusafe/keys.json'
     
     rsa_manager = RSAKey(file_path)
-    
+ 
    
     # rsa_manager.save_rsa_keys_to_json()
 

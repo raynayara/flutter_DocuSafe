@@ -3,15 +3,18 @@ import os
 import hashlib
 from adm import carregar_dados, salvar_dados
 from adm import coleta_dados
-
+import base64
+import criptografia
+file_path = 'C:/Ronald/Faculdade/Seguranca/flutter_DocuSafe/docusafe/keys.json'
+rsa_manager = criptografia.RSAKey(file_path)
 
 # Função para limpar a tela
 def limpar_tela():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 # Caminho do arquivo JSON
-nome_arquivo_users = 'docusafe/users.json'
-nome_arquivo_notas = 'docusafe/notas.json'
+nome_arquivo_users = 'users.json'
+nome_arquivo_notas = 'notas.json'
 
 # Função para login do professor
 def entrar_como_professor():
@@ -20,14 +23,16 @@ def entrar_como_professor():
     # Verifica no arquivo users.json
     users = carregar_dados(nome_arquivo_users)
     for prof in users.get('users', []):
-        if prof['user'] == user and prof['password'] == password_hash:
-            if prof.get('permissao') == 'professor':
-                limpar_tela()
-                print(f'{prof["user"]} logado como professor com sucesso')
-                return True, user
-            else:
-                print('Permissão negada. Apenas professores podem acessar.')
-                return False, None
+        if prof['user'] == user:
+            password_decrypted = rsa_manager.decifrar(base64.b64decode(prof['password']))
+            if password_decrypted == password_hash:
+                if prof.get('permissao') == 'professor':
+                    limpar_tela()
+                    print(f'{prof["user"]} logado como professor com sucesso')
+                    return True, user
+                else:
+                    print('Permissão negada. Apenas professores podem acessar.')
+                    return False, None
     print('Usuário ou senha incorretos.')
     return False, None
 

@@ -1,10 +1,15 @@
 import json
 import os
-import hashlib
+import hash
+import criptografia
+import base64
+
+file_path = 'C:/Ronald/Faculdade/Seguranca/flutter_DocuSafe/docusafe/keys.json'
+rsa_manager = criptografia.RSAKey(file_path)
 
 # Caminho dos arquivos JSON
-nome_arquivo_users = 'docusafe/users.json'
-nome_arquivo_notas = 'docusafe/notas.json'
+nome_arquivo_users = 'users.json'
+nome_arquivo_notas = 'notas.json'
 
 # Inicializa lista de disciplinas e turmas
 disciplinas = []
@@ -19,7 +24,7 @@ def coleta_dados():
     
     user = input('Digite o usuário: ')
     password = input('Digite a senha: ')
-    password_hash = hashlib.sha256(password.encode()).hexdigest()  # Hash da senha
+    password_hash = hash.hash_password(password) # Hash da senha
     return user, password_hash
     
 
@@ -41,33 +46,39 @@ def carregar_dados(nome_arquivo):
 
 # Função para login do administrador
 def entrar_como_adm():
-    user, password_hash = coleta_dados()
+    user, password_hashed = coleta_dados()
 
     # Verifica no arquivo users.json
     users = carregar_dados(nome_arquivo_users)
     for admin in users.get('users', []):
-        if admin['user'] == user and admin['password'] == password_hash:
-            if admin.get('permissao') == 'adm':
-                limpar_tela()
-                print(f'{admin["user"]} logado como administrador com sucesso')
-                print("-~-"*20)
+        if admin['user'] == user:
+            password_decrypted = rsa_manager.decifrar(base64.b64decode(admin['password']))
+            print(password_decrypted)
+            print('---------------------')
+            print(password_hashed)
+            if password_decrypted == password_hashed:
+                if admin.get('permissao') == 'adm':
+                    limpar_tela()
+                    print(f'{admin["user"]} logado como administrador com sucesso')
+                    print("-~-"*20)
+                    
+                    return True
                 
-                return True
-            
-            else:
-                print('Permissão negada. Apenas administradores podem acessar.')
-                return False
-    print('Usuário ou senha incorretos.')
-    return False
+                else:
+                    print('Permissão negada. Apenas administradores podem acessar.')
+                    return False
+        print('Usuário ou senha incorretos.')
+        return False
 
 # Função para salvar no arquivo 'users' com permissões
-def salvar_no_users(user, password_hash, permissao):
+def salvar_no_users(user, password_hashed, permissao):
     users = carregar_dados(nome_arquivo_users)
 
     if 'users' not in users:
         users['users'] = []
-    
-    novo_usuario = {"user": user, "password": password_hash, "permissao": permissao}
+    password_encrypted = rsa_manager.cifrar(password_hashed)
+    password_encrypted_base64 = base64.b64encode(password_encrypted).decode('utf-8')
+    novo_usuario = {"user": user, "password": password_encrypted_base64, "permissao": permissao}
     
     users['users'].append(novo_usuario)
     salvar_dados(nome_arquivo_users, users)
